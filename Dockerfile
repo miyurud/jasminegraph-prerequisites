@@ -72,3 +72,16 @@ RUN cmake ..
 RUN make install
 
 RUN rm -rf /home/ubuntu/software/*
+
+WORKDIR /home/ubuntu/software/code
+RUN apt-get update && apt-get install --no-install-recommends -y default-jre
+RUN curl -O https://s3.amazonaws.com/artifacts.opencypher.org/M23/Cypher.g4
+RUN curl -O https://www.antlr.org/download/antlr-4.13.2-complete.jar
+RUN java -jar antlr-4.13.2-complete.jar -Dlanguage=Cpp -visitor Cypher.g4
+RUN apt-get purge default-jre -y
+
+WORKDIR /home/ubuntu/software
+RUN mkdir /home/ubuntu/software/antlr
+RUN mv /home/ubuntu/software/code/*.cpp /home/ubuntu/software/antlr
+RUN mv /home/ubuntu/software/code/*.h /home/ubuntu/software/antlr
+RUN rm -rf /home/ubuntu/software/code
