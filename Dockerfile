@@ -29,7 +29,7 @@ RUN git clone --single-branch --depth 1 https://github.com/mfontanini/cppkafka.g
 RUN git clone --single-branch --depth 1 https://github.com/kubernetes-client/c
 RUN git clone --single-branch --depth 1 --branch v4.2-stable https://libwebsockets.org/repo/libwebsockets
 RUN git clone --single-branch --depth 1 --branch release/0.2.5 https://github.com/yaml/libyaml
-RUN git clone --single-branch --depth 1 -branch v4.11.1 https://github.com/antlr/antlr4.git
+RUN git clone --single-branch --depth 1 --branch v4.11.1 https://github.com/antlr/antlr4.git
 
 WORKDIR /home/ubuntu/software/METIS
 RUN git submodule update --init
