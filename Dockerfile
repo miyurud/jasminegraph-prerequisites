@@ -29,7 +29,7 @@ RUN git clone --single-branch --depth 1 https://github.com/mfontanini/cppkafka.g
 RUN git clone --single-branch --depth 1 https://github.com/kubernetes-client/c
 RUN git clone --single-branch --depth 1 --branch v4.2-stable https://libwebsockets.org/repo/libwebsockets
 RUN git clone --single-branch --depth 1 --branch release/0.2.5 https://github.com/yaml/libyaml
-RUN git clone --single-branch --depth 1 https://github.com/antlr/antlr4.git
+RUN git clone --single-branch --depth 1 --branch v4.11.1 https://github.com/antlr/antlr4.git
 
 WORKDIR /home/ubuntu/software/METIS
 RUN git submodule update --init
@@ -72,3 +72,16 @@ RUN cmake ..
 RUN make install
 
 RUN rm -rf /home/ubuntu/software/*
+
+WORKDIR /home/ubuntu/software/code
+RUN apt-get update && apt-get install --no-install-recommends -y default-jre
+RUN curl -O https://s3.amazonaws.com/artifacts.opencypher.org/M23/Cypher.g4
+RUN curl -O https://www.antlr.org/download/antlr-4.13.2-complete.jar
+RUN java -jar antlr-4.13.2-complete.jar -Dlanguage=Cpp -visitor Cypher.g4
+RUN apt-get purge default-jre -y
+
+WORKDIR /home/ubuntu/software
+RUN mkdir /home/ubuntu/software/antlr
+RUN mv /home/ubuntu/software/code/*.cpp /home/ubuntu/software/antlr
+RUN mv /home/ubuntu/software/code/*.h /home/ubuntu/software/antlr
+RUN rm -rf /home/ubuntu/software/code
