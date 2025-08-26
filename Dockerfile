@@ -25,12 +25,12 @@ RUN mkdir software
 WORKDIR /home/ubuntu/software
 
 RUN git clone --single-branch --depth 1 --branch v5.1.1-DistDGL-v0.5 https://github.com/KarypisLab/METIS.git
-RUN git clone --single-branch --depth 1 https://github.com/mfontanini/cppkafka.git
-RUN git clone --single-branch --depth 1 https://github.com/kubernetes-client/c
+RUN git clone --single-branch --depth 1 --branch v0.4.1 https://github.com/mfontanini/cppkafka.git
+RUN git clone --single-branch --depth 1 --branch v0.8.0 https://github.com/kubernetes-client/c
 RUN git clone --single-branch --depth 1 --branch v4.2-stable https://libwebsockets.org/repo/libwebsockets
 RUN git clone --single-branch --depth 1 --branch release/0.2.5 https://github.com/yaml/libyaml
 RUN git clone --single-branch --depth 1 --branch v4.11.1 https://github.com/antlr/antlr4.git
-RUN git clone --single-branch --depth 1 https://github.com/erikmuttersbach/libhdfs3.git
+RUN git clone --single-branch --depth 1 https://github.com/miyurud/libhdfs3.git
 
 WORKDIR /home/ubuntu/software/METIS
 RUN git submodule update --init
