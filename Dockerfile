@@ -6,13 +6,34 @@ RUN apt-get install --no-install-recommends -y apt-transport-https
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y curl gnupg2 ca-certificates software-properties-common nlohmann-json3-dev
 
-RUN apt-get update && apt-get install --no-install-recommends -y git cmake build-essential sqlite3 libsqlite3-dev libssl-dev librdkafka-dev libboost-all-dev libtool libxerces-c-dev libflatbuffers-dev libjsoncpp-dev libspdlog-dev pigz libcurl4-openssl-dev uncrustify libyaml-cpp-dev libprotobuf-dev protobuf-compiler libxml2-dev libkrb5-dev uuid-dev libgsasl7-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --no-install-recommends -y git cmake build-essential sqlite3 libsqlite3-dev libssl-dev librdkafka-dev libboost-all-dev libtool libxerces-c-dev libflatbuffers-dev libjsoncpp-dev libspdlog-dev pigz libcurl4-openssl-dev uncrustify libyaml-cpp-dev libprotobuf-dev protobuf-compiler libxml2-dev libkrb5-dev uuid-dev libgsasl7-dev libgrpc++-dev libgrpc-dev pkg-config libc-ares-dev libre2-dev libabsl-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get install --no-install-recommends -y python3.8-dev python3-pip python3.8-distutils
 RUN python3.8 -m pip install stellargraph
 RUN python3.8 -m pip install chardet scikit-learn joblib threadpoolctl pandas
 RUN python3.8 -m pip cache purge
+
+# Build and install OpenTelemetry C++ SDK with exporters
+WORKDIR /tmp
+RUN git clone --branch v1.16.1 --recurse-submodules https://github.com/open-telemetry/opentelemetry-cpp.git
+WORKDIR /tmp/opentelemetry-cpp
+RUN mkdir build && cd build && \
+    cmake -DWITH_PROMETHEUS=ON \
+          -DWITH_OTLP_GRPC=OFF \
+          -DWITH_OTLP_HTTP=ON \
+          -DBUILD_TESTING=OFF \
+          -DWITH_EXAMPLES=OFF \
+          -DCMAKE_INSTALL_PREFIX=/usr/local \
+          .. && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig \
+    && cd / && rm -rf /tmp/opentelemetry-cpp
+
+# Set environment variables to help CMake find OpenTelemetry
+ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
+ENV CMAKE_PREFIX_PATH="/usr/local:$CMAKE_PREFIX_PATH"
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
