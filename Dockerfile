@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y apt-transport-https
 RUN apt-get update
-RUN apt-get install --no-install-recommends -y curl gnupg2 ca-certificates software-properties-common nlohmann-json3-dev    
+RUN apt-get install --no-install-recommends -y curl gnupg2 ca-certificates software-properties-common nlohmann-json3-dev
 
 RUN apt-get update && apt-get install --no-install-recommends -y git cmake build-essential sqlite3 libsqlite3-dev libssl-dev librdkafka-dev libboost-all-dev libtool libxerces-c-dev libflatbuffers-dev libjsoncpp-dev libspdlog-dev pigz libcurl4-openssl-dev uncrustify libyaml-cpp-dev libprotobuf-dev protobuf-compiler libxml2-dev libkrb5-dev uuid-dev libgsasl7-dev libgrpc++-dev libgrpc-dev pkg-config libc-ares-dev libre2-dev libabsl-dev  libopenblas-dev libomp-dev libgflags-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -108,8 +108,6 @@ RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.29.6/cmake-3.2
  && make install \
  && cd .. \
  && rm -rf cmake-3.29.6 cmake-3.29.6.tar.gz
-
-
 
 WORKDIR /usr/local/lib
 RUN apt-get update && apt-get install --no-install-recommends -y git  libopenblas-dev libomp-dev libgflags-dev
