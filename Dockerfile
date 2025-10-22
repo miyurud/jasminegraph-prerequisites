@@ -6,7 +6,7 @@ RUN apt-get install --no-install-recommends -y apt-transport-https
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y curl gnupg2 ca-certificates software-properties-common nlohmann-json3-dev
 
-RUN apt-get update && apt-get install --no-install-recommends -y git cmake build-essential sqlite3 libsqlite3-dev libssl-dev librdkafka-dev libboost-all-dev libtool libxerces-c-dev libflatbuffers-dev libjsoncpp-dev libspdlog-dev pigz libcurl4-openssl-dev uncrustify libyaml-cpp-dev libprotobuf-dev protobuf-compiler libxml2-dev libkrb5-dev uuid-dev libgsasl7-dev libgrpc++-dev libgrpc-dev pkg-config libc-ares-dev libre2-dev libabsl-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --no-install-recommends -y git cmake build-essential sqlite3 libsqlite3-dev libssl-dev librdkafka-dev libboost-all-dev libtool libxerces-c-dev libflatbuffers-dev libjsoncpp-dev libspdlog-dev pigz libcurl4-openssl-dev uncrustify libyaml-cpp-dev libprotobuf-dev protobuf-compiler libxml2-dev libkrb5-dev uuid-dev libgsasl7-dev libgrpc++-dev libgrpc-dev pkg-config libc-ares-dev libre2-dev libabsl-dev  libopenblas-dev libomp-dev libgflags-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get install --no-install-recommends -y python3.8-dev python3-pip python3.8-distutils
@@ -59,7 +59,7 @@ RUN find . -type f -print0 | xargs -0 sed -i '/-march=native/d'
 RUN make config shared=1 cc=gcc prefix=/usr/local
 RUN make install
 
-RUN apt-get purge -y --autoremove git
+
 
 RUN mkdir /home/ubuntu/software/cppkafka/build
 WORKDIR /home/ubuntu/software/cppkafka/build
@@ -99,6 +99,26 @@ RUN ../bootstrap --prefix=/usr/local/libhdfs3
 RUN make -j8
 RUN make install
 
+RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.29.6/cmake-3.29.6.tar.gz \
+    -o cmake-3.29.6.tar.gz \
+ && tar -zxvf cmake-3.29.6.tar.gz \
+ && cd cmake-3.29.6 \
+ && ./bootstrap \
+ && make -j$(nproc) \
+ && make install \
+ && cd .. \
+ && rm -rf cmake-3.29.6 cmake-3.29.6.tar.gz
+
+WORKDIR /usr/local/lib
+RUN apt-get update && apt-get install --no-install-recommends -y git  libopenblas-dev libomp-dev libgflags-dev
+RUN git clone --depth=1 https://github.com/facebookresearch/faiss.git
+WORKDIR /usr/local/lib/faiss
+RUN mkdir build && cd build \
+ && cmake -DFAISS_ENABLE_PYTHON=OFF -DFAISS_ENABLE_GPU=OFF .. \
+ && make -j$(nproc) \
+ && make install
+
+ RUN apt-get purge -y --autoremove git
 RUN rm -rf /home/ubuntu/software/*
 
 WORKDIR /home/ubuntu/software/code
